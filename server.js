@@ -22,6 +22,10 @@ mongo.connect(dburl, function(dberr, db) {
         var link = req.params.url + req.params[0];
         if (validator.isURL(link)) {
                 colId(function(err, id) {
+                    if (urls.parse(link).protocol === null) {
+                        link = "http://"+link;
+                        console.log('no protocol ' + link);
+                    }
                     if(err) throw err;
                     collection.insert({
                         _id: id,
@@ -31,7 +35,7 @@ mongo.connect(dburl, function(dberr, db) {
                     })
                 res.end(JSON.stringify({
                     original: link,
-                    short: id
+                    short: "https://evgeny-url-shortener.herokuapp.com/"+id
                 }))
             });
         } else {
@@ -42,25 +46,17 @@ mongo.connect(dburl, function(dberr, db) {
     })
     app.get('/:urlID', function(req, res) {
         var id = +req.params.urlID
-        console.log(req.params.urlID);
         collection.findOne({
             _id: id
         }, function(err, docs) {
             if (err) throw err;
+            console.log(docs.url)
             if(!docs) {
                 res.end(JSON.stringify({
                     error: "There is no such id!"
                 }))
             } else {
-                var url1 = '';
-                if (urls.parse(docs.url).protocol === null) {
-                    url1 = "http://"+docs.url;
-                    console.log('no protocol ' + url1);
-                } else {
-                    url1 = docs.url;
-                    console.log('protocol ' + url1);
-                }
-                res.writeHead(301, {Location: url1});
+                res.writeHead(301, {Location: docs.url});
                 res.end();
             }
         });
