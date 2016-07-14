@@ -1,8 +1,8 @@
 var express = require("express");
 var validator = require('validator');
 var mongo = require("mongodb").MongoClient;
+var urls = require("url");
 var dburl = "mongodb://test:123456789@ds017553.mlab.com:17553/shortlinks"
-
 
 mongo.connect(dburl, function(dberr, db) {
     function colId(callback) {
@@ -42,6 +42,7 @@ mongo.connect(dburl, function(dberr, db) {
     })
     app.get('/:urlID', function(req, res) {
         var id = +req.params.urlID
+        console.log(req.params.urlID);
         collection.findOne({
             _id: id
         }, function(err, docs) {
@@ -51,7 +52,15 @@ mongo.connect(dburl, function(dberr, db) {
                     error: "There is no such id!"
                 }))
             } else {
-                res.writeHead(301, {Location: docs.url});
+                var url1 = '';
+                if (urls.parse(docs.url).protocol === null) {
+                    url1 = "http://"+docs.url;
+                    console.log('no protocol ' + url1);
+                } else {
+                    url1 = docs.url;
+                    console.log('protocol ' + url1);
+                }
+                res.writeHead(301, {Location: url1});
                 res.end();
             }
         });
