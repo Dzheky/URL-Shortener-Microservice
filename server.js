@@ -48,8 +48,8 @@ mongo.connect(dburl, function(dberr, db) {
             _id: id
         }, function(err, docs) {
             if (err) console.log(err);
-            console.log(docs.url)
-            if(!docs) {
+            if(docs === null) {
+                res.writeHead(200, {"Content-Type": "application/JSON"});
                 res.end(JSON.stringify({
                     error: "There is no such id!"
                 }))
