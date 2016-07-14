@@ -8,7 +8,7 @@ mongo.connect(dburl, function(dberr, db) {
     function colId(callback) {
         collection.count({}, callback)
     }
-    if(dberr) throw dberr;
+    if (dberr) console.log(dberr);
     var collection = db.collection('urls');
     var app = express();
     app.use(express.static(__dirname+'/public'));
@@ -26,12 +26,10 @@ mongo.connect(dburl, function(dberr, db) {
                         link = "http://"+link;
                         console.log('no protocol ' + link);
                     }
-                    if(err) throw err;
+                    if (err) console.log(err);
                     collection.insert({
                         _id: id,
                         url: link
-                    }, function(err, result) {
-                        if (err) throw err;
                     })
                 res.end(JSON.stringify({
                     original: link,
@@ -49,7 +47,7 @@ mongo.connect(dburl, function(dberr, db) {
         collection.findOne({
             _id: id
         }, function(err, docs) {
-            if (err) throw err;
+            if (err) console.log(err);
             console.log(docs.url)
             if(!docs) {
                 res.end(JSON.stringify({
