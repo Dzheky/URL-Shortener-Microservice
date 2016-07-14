@@ -24,7 +24,6 @@ mongo.connect(dburl, function(dberr, db) {
                 colId(function(err, id) {
                     if (urls.parse(link).protocol === null) {
                         link = "http://"+link;
-                        console.log('no protocol ' + link);
                     }
                     if (err) console.log(err);
                     collection.insert({
